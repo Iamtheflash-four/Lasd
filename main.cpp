@@ -15,21 +15,7 @@
 
 int main() {
   std::cout << "LASD Libraries 2025" << std::endl;
-  //lasdtest();
-  lasd::Vector<int> v(10);
-  for(int i=0; i<10; i++)
-    v[i] = 2*i;
-
-  lasd::SetLst<int> s(std::move(v));
-
-  for(int i=0; i<10; i++)
-    std::cout << s[i] << ", ";
-  std::cout << "\nConcluso";
-  
-  
-  
-  
+  lasdtest();
+  mytest();  
   return 0;
-  
-  
 }

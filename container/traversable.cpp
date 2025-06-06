@@ -10,9 +10,9 @@ namespace lasd {
         bool found = false;
         Traverse
         (
-            [&found, val](const Data& dat)
+            [val, &found](const Data& dat)
             {
-                found = found || (val == dat);
+                found |= (val == dat);
             }
         );
         return found;

@@ -14,7 +14,8 @@ namespace lasd {
 /* ************************************************************************** */
 
 template <typename Data>
-class PQHeap {
+class PQHeap : virtual public PQ<Data>, virtual protected HeapVec<Data>
+{
   // Must extend PQ<Data>,
   // Could extend HeapVec<Data>
 
@@ -24,60 +25,70 @@ private:
 
 protected:
 
-  // using Container::???;
-
-  // ...
+  using Container::size;
+	unsigned long int capacity=0;	
+  using Vector<Data>::elements;
 
 public:
 
   // Default constructor
-  // PQHeap() specifiers;
+  PQHeap() =default;
 
   /* ************************************************************************ */
 
   // Specific constructors
-  // PQHeap(argument) specifiers; // A priority queue obtained from a TraversableContainer
-  // PQHeap(argument) specifiers; // A priority queue obtained from a MappableContainer
+  PQHeap(const TraversableContainer<Data>&); // A priority queue obtained from a TraversableContainer
+  PQHeap(MappableContainer<Data>&&) noexcept; // A priority queue obtained from a MappableContainer
 
   /* ************************************************************************ */
 
   // Copy constructor
-  // PQHeap(argument) specifiers;
+  PQHeap(const PQHeap<Data>&) ;
 
   // Move constructor
-  // PQHeap(argument) specifiers;
+  PQHeap(PQHeap<Data>&&) noexcept;
 
   /* ************************************************************************ */
 
   // Destructor
-  // ~PQHeap() specifiers;
+  virtual ~PQHeap() =default;
 
   /* ************************************************************************ */
 
   // Copy assignment
-  // type operator=(argument) specifiers;
+  PQHeap<Data>& operator=(const PQHeap<Data>&);
 
   // Move assignment
-  // type operator=(argument) specifiers;
+  PQHeap<Data>& operator=(PQHeap<Data>&&) noexcept;
 
+  void Clear() noexcept override;
   /* ************************************************************************ */
 
   // Specific member functions (inherited from PQ)
+  using Container::Size;
+  using Container::Empty;
+  using HeapVec<Data>::IsHeap;
+  using LinearContainer<Data>::operator==;
+  using LinearContainer<Data>::operator!=;
 
-  // type Tip(argument) specifiers; // Override PQ member (must throw std::length_error when empty)
-  // type RemoveTip(argument) specifiers; // Override PQ member (must throw std::length_error when empty)
-  // type TipNRemove(argument) specifiers; // Override PQ member (must throw std::length_error when empty)
+  const Data& Tip() const override; // Override PQ member (must throw std::length_error when empty)
+  void RemoveTip() override; // Override PQ member (must throw std::length_error when empty)
+  Data TipNRemove() override; // Override PQ member (must throw std::length_error when empty)
 
-  // type Insert(argument) specifiers; // Override PQ member (Copy of the value)
-  // type Insert(argument) specifiers; // Override PQ member (Move of the value)
+  void Insert(const Data&) override; // Override PQ member (Copy of the value)
+  void Insert(Data&&) noexcept override; // Override PQ member (Move of the value)
 
-  // type Change(argument) specifiers; // Override PQ member (Copy of the value)
-  // type Change(argument) specifiers; // Override PQ member (Move of the value)
+  void Change(unsigned long int, const Data&) override; // Override PQ member (Copy of the value)
+  void Change(unsigned long int, Data&&) noexcept override; // Override PQ member (Move of the value)
+
+  const Data& operator[](unsigned long int) const override; 
 
 protected:
-
+  void HeapifyUp(unsigned long int) noexcept;
+  //void HeapifyDown(unsigned long int) noexcept;
+  //Data& operator[](unsigned long int) override;
   // Auxiliary functions, if necessary!
-
+  void Resize(unsigned long int);
 };
 
 /* ************************************************************************** */

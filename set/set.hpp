@@ -37,7 +37,8 @@ public:
   virtual ~Set() =default;
 
   /* ************************************************************************ */
-
+  using LinearContainer<Data>::operator==;
+  using LinearContainer<Data>::operator!=;
   // Copy assignment
   Set& operator=(const Set<Data>&) =delete; // Copy assignment of abstract types is not possible.
 

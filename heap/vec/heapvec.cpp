@@ -58,7 +58,7 @@ namespace lasd {
 	bool HeapVec<Data> :: IsHeap() const noexcept 
 	{
 		for(unsigned int i=0; i<(size/2); i++)
-			if( 	( isLeftNode(i) && elements[i] < elements[2*i +1] )					// left 
+			if( 	( isLeftNode(i) && elements[i] < elements[2*i +1] )			// left 
 			  ||  ( isRigthNode(i) && elements[i] < elements[2*i+2] )	 		// rigth
 			 )
 			 return false;
@@ -77,16 +77,19 @@ namespace lasd {
 	template<typename Data>
 	void HeapVec<Data> :: Sort() noexcept
 	{
-		Heapify();
-		unsigned long int temp = size;	//Dovra' essere ripristinata size' 
-		for( unsigned i=Size()-1; i>0; i--)
+		if( !( this->Empty() ) )
 		{
-			std :: swap(elements[0], elements[i]);
-			size--;
-			Heapify(0);
-			
+			Heapify();
+			unsigned long int temp = size;	//Dovra' essere ripristinata size' 
+			for( unsigned i=Size()-1; i>0; i--)
+			{
+				std :: swap(elements[0], elements[i]);
+				size--;
+				Heapify(0);
+			}
+			size = temp;
 		}
-		size = temp;
+		
 	}
 	
 	//Auxiliary

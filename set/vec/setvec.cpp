@@ -28,7 +28,8 @@ namespace lasd {
 	SetVec<Data> :: SetVec(MappableContainer<Data>&& con) noexcept
 	{
 		count = head  = size = 0;
-		con.Map
+		elements = nullptr;
+		con.Traverse
 		(
 			[this](const Data& dat)
 			{
@@ -113,15 +114,17 @@ namespace lasd {
 	template<typename Data>
 	inline bool SetVec<Data> :: Exists(const Data& dat) const noexcept
 	{
-		bool found = false;
-		unsigned long int i=0;
-		while ( i < count && found == false)
-		{	
-			if( (*this)[i] == dat )
-				found = true;
-			i++;
-		}
-		return found;
+		// bool found = false;
+		// unsigned long int i=0;
+		// while ( i < count && found == false)
+		// {	
+		// 	if( (*this)[i] == dat )
+		// 		found = true;
+		// 	i++;
+		// }
+		// return found;
+		unsigned long pos = binSearch(dat);
+		return  pos!=count && (*this)[pos]== dat;
 	}
 	
 	// OrderedDictionaryContainer
@@ -305,7 +308,7 @@ namespace lasd {
 	template<typename Data>
 	inline const Data& SetVec<Data> :: operator[](unsigned long int i)  const
 	{
-		if( i<0 || i >= count)
+		if(i >= count)
 			throw std :: out_of_range("Indice errato");
 		return elements[ (head + i ) % size ];
 	}
@@ -359,7 +362,7 @@ namespace lasd {
 	template<typename Data>
 	inline Data& SetVec<Data> :: at(unsigned long int i) 
 	{
-		if( i<0 || i >= count)
+		if(i >= count)
 			throw std :: out_of_range("Indice errato");
 		return elements[ (head + i) % size ];
 	}
@@ -368,7 +371,7 @@ namespace lasd {
 	inline unsigned long int SetVec<Data> :: predecessorPos(const Data& dat) const 
 	{
 		unsigned long int i = binSearch(dat);
-		if(dat <= (*this)[0])
+		if(Empty() || dat <= (*this)[0] )
 			throw std::length_error("Non esiste il predecessore.");
 		if(count == i || (*this)[i] == dat)
 			i--;
@@ -378,7 +381,7 @@ namespace lasd {
 	template<typename Data>
 	inline unsigned long int SetVec<Data> :: successorPos(const Data& dat) const 
 	{
-		if(dat >= (*this)[count-1] )
+		if(Empty() || dat >= (*this)[count-1] )
 			throw std::length_error("Non esiste il sucecessore.");
 		unsigned long int i = binSearch(dat);
 		if( (*this)[i] == dat)
@@ -386,8 +389,3 @@ namespace lasd {
 		return i;
  	}
 }
-//set, no duplicati e ordinato, ric binaria
-// Vettore circolare, per migliorare l'inserimento all'inizio, 2 indici head  e tail,  minimo e massimo
-//head + size   prox cella libera, mod capcity
-//size e capacity
-//Ereditare Vector in modo protected e  le 3 funzioni in modalta pubblica;   metodo Exists

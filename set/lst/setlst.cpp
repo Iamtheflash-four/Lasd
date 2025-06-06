@@ -29,14 +29,6 @@ namespace lasd {
       );
    }
 
-   // template<typename Data>
-   // SetLst<Data> :: SetLst(const SetLst<Data>& ls) 
-   //    : List(ls) {}
-
-   // template<typename Data>
-   // SetLst<Data> :: SetLst(SetLst<Data>&& ls) noexcept
-   //    : List(ls) {}
-
    template<typename Data>
    SetLst<Data> :: ~SetLst() 
    {
@@ -148,7 +140,7 @@ namespace lasd {
    inline const Data& SetLst<Data>::Predecessor(const Data& dat) const 
    {
       typename List<Data>::Node *prev=head, *t = binSearch(dat, &prev);;
-      if(size==0 || dat < head->elements)
+      if(size==0 || dat <= head->elements)
          throw std::length_error("Non esiste");
       if(t->elements == dat)
          return prev->elements;
@@ -161,7 +153,7 @@ namespace lasd {
    template <typename Data>
    inline Data SetLst<Data>::PredecessorNRemove(const Data& dat)
    {
-      if(size ==0 || dat < head->elements)
+      if(size ==0 || dat <= head->elements)
          throw std::length_error("Non esiste");
       Data elem = Predecessor(dat);
       Remove(elem);
@@ -171,7 +163,7 @@ namespace lasd {
    template <typename Data>
    inline void SetLst<Data> :: RemovePredecessor(const Data& dat)
    {
-      if(size ==0 || dat < head->elements)
+      if(size ==0 || dat <= head->elements)
          throw std::length_error("Non esiste");
       Remove(Predecessor(dat));
    }
@@ -179,17 +171,22 @@ namespace lasd {
    template <typename Data>
    inline const Data& SetLst<Data>::Successor(const Data& dat) const 
    {
-      if(size==0 || tail->elements < dat)
+      if(size==0 || tail->elements <= dat)
          throw std::length_error("Non esiste");
 
-      typename List<Data>::Node *t = binSearch(dat, nullptr);;
-      return t->next->elements;
+      typename List<Data>::Node *t = binSearch(dat, nullptr);
+      if(t==nullptr)
+         return head->elements;
+      if(t->next)                   
+         return t->next->elements;  
+      else
+         return t->elements;  //tail e il successore
    }
 
    template <typename Data>
    inline Data SetLst<Data>::SuccessorNRemove(const Data& dat)
    {
-      if(size==0 || tail->elements < dat)
+      if(size==0 || tail->elements <= dat)
          throw std::length_error("Non esiste");
       typename List<Data>::Node *t = binSearch(dat, nullptr), *t2 = t->next;
       Data elem = t2->elements;
@@ -202,7 +199,7 @@ namespace lasd {
    template <typename Data>
    inline void SetLst<Data> :: RemoveSuccessor(const Data& dat)
    {
-      if(size==0 || tail->elements < dat)
+      if(size==0 || tail->elements <= dat)
          throw std::length_error("Non esiste");
       typename List<Data>::Node *t = binSearch(dat, nullptr), *t2 = t->next;
       t -> next = t2->next;
@@ -261,7 +258,6 @@ namespace lasd {
             if(tail == t)
                tail = tail->next;
          }
-         
       }
       size++;
       return true;
@@ -289,6 +285,8 @@ namespace lasd {
    template<typename Data>
    inline const Data& SetLst<Data> :: operator[](unsigned long int i) const 
    {
+      if( i>=size)
+         throw std::out_of_range("Indice errato");
       typename List<Data>::Node *t = head;
       for(unsigned long j=0; j<i; j++)
          t = t->next;
@@ -302,7 +300,7 @@ namespace lasd {
       if( head == nullptr || val < head->elements)
          return nullptr;
       
-      typename List<Data>::Node *t = head, *ret = nullptr;
+      typename List<Data>::Node *t = head, *ret = head;
       while( i < j)
       {
          q = (i+j)/2;

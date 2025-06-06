@@ -114,7 +114,7 @@ namespace lasd {
 	template<typename Data>
 	inline Data& Vector<Data> :: operator[](unsigned long int i)
 	{
-		if (i<0 ||  i>= size)
+		if (i>= size)
 			throw std::out_of_range("Indice non valido");
 		else
 			return elements[i];
@@ -142,7 +142,7 @@ namespace lasd {
 	template<typename Data>
 	inline const Data& Vector<Data> :: operator[](unsigned long int i) const
 	{
-		if (i<0 ||  i>= size)
+		if (i>= size)
 			throw std::out_of_range("Indice non valido");
 		else
 			return elements[i];

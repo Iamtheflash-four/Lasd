@@ -359,8 +359,7 @@ namespace lasd
     template <typename Data>
     void List<Data>::PostOrderMap(MapFun fun) noexcept
     {
-      for(unsigned long int i =size-1; i>=0; i--)
-         fun( (*this)[i] );
+      ReverseMap(fun, head);
     }
  
     template <typename Data>
@@ -381,20 +380,13 @@ namespace lasd
             curr = curr->next;
         }
     }
+
     template <typename Data>
-    void List<Data>::PostOrderTraverse(TraverseFun fun) const
+    void List<Data>::PostOrderTraverse(TraverseFun func) const
     {
- 
-        std::function<void(Node *)> helper = [&](Node *node)
-        {
-            if (node != nullptr)
-            {
-                helper(node->next);
-                fun(node->elements);
-            }
-        };
-        helper(head);
+        ReverseTraverse(func, head);
     }
+
     template <typename Data>
     void List<Data>::Clear() noexcept
     {
@@ -427,8 +419,26 @@ namespace lasd
             curr = curr->next;
         }
     }
+    
+    template <typename Data>
+    void List<Data>::ReverseTraverse(TraverseFun func, Node* curr) const
+    {
+        if(curr != nullptr)
+        {
+            ReverseTraverse(func, curr->next);
+            func(curr->elements);
+        }
+    }
  
- 
+    template <typename Data>
+    void List<Data>::ReverseMap(MapFun func, Node* curr) noexcept
+    {
+        if(curr != nullptr)
+        {
+            ReverseMap(func, curr->next);
+            func(curr->elements);
+        }
+    }
     /* ************************************************************************ */
  
 }

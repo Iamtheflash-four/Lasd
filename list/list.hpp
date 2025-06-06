@@ -186,7 +186,8 @@ namespace lasd
     
  
   protected:
-  
+    void ReverseTraverse(TraverseFun, Node*) const;
+    void ReverseMap(MapFun, Node*) noexcept;
     void CopyFrom(const List &);
     void MoveFrom(List &&) noexcept;
   };

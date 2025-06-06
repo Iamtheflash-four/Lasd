@@ -25,7 +25,7 @@ protected:
 public:
 
   // Destructor
- virtual ~PQ() specifiers
+ virtual ~PQ() =default;
 
   /* ************************************************************************ */
 
@@ -39,15 +39,15 @@ public:
 
   // Specific member functions
 
-  // type Tip(argument) specifiers; // (concrete function must throw std::length_error when empty)
-  // type RemoveTip(argument) specifiers; // (concrete function must throw std::length_error when empty)
-  // type TipNRemove(argument) specifiers; // (concrete function must throw std::length_error when empty)
+  virtual const Data& Tip() const =0 ; // (concrete function must throw std::length_error when empty)
+  virtual void RemoveTip() =0; // (concrete function must throw std::length_error when empty)
+  virtual Data TipNRemove() =0; // (concrete function must throw std::length_error when empty)
 
-  // type Insert(argument) specifiers; // Copy of the value
-  // type Insert(argument) specifiers; // Move of the value
+  virtual void Insert(const Data&) =0; // Copy of the value
+  virtual void Insert(Data &&) noexcept =0; // Move of the value
 
-  // type Change(argument) specifiers; // Copy of the value
-  // type Change(argument) specifiers; // Copy of the value
+  virtual void Change(unsigned long int, const Data&) =0; 				 // Copy of the value
+  virtual void Change(unsigned long int, Data&&) noexcept =0;	 // Move of the value
 
 };
 
