@@ -29,6 +29,8 @@ void HeapVecSortTest();
 
 void PQTestInt();
 
+void PQHeapTestDouble();
+
 template <class T>
 void myTestDictionaryC();
 
@@ -47,6 +49,7 @@ void myTraversableTestInt1();
 
 void myTraversableTestInt2();
 
+void PQHeapTestString(); 
 
 template <class T>
 void myMappableTestString();

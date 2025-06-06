@@ -83,7 +83,6 @@ namespace lasd {
 			Resize( size * 2 + 1  );
 		elements[size] = val;
 		size++;
-		//this->Heapify();
 		HeapifyUp(size -1);
 	}
 	
@@ -95,7 +94,6 @@ namespace lasd {
 		elements[size] = std::move(val);
 		size++;
 		HeapifyUp(size -1);
-		//this->Heapify();
 	}
 	
 	template <typename Data>

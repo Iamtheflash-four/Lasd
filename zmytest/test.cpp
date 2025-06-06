@@ -13,7 +13,7 @@ using namespace std;
 /* ************************************************************************** */
 void mytest() {
   srand(time(NULL));
-  mytest1();
+  //mytest1();
   mytest2();
   std::cout << "\nMytest completo";
 }
@@ -55,19 +55,24 @@ void mytest2()
   HeapVecStringTest();
 
   HeapVecSortTest();
-  std::cout << "\nTest Sort completo, nessun errore.";
+  std::cout << "\nTest Sort completo, nessun errore.\n";
 
   PQTestInt();
-  std::cout << "\nTest PQ<int>completo, nessun errore.n";
+  std::cout << "\nTest PQ<int>completo, nessun errore.\n";
+
+  PQHeapTestDouble();
+  std::cout << "\nTest PQ<double>completo, nessun errore.\n";
+
+  PQHeapTestString(); 
+  std::cout << "\nTest PQ<string>completo, nessun errore.\n";
 
   myTraversableTestInt2();
-  std::cout << "\nTest TraversableContainer<int> completo, nessun errore.";
+  std::cout << "\nTest TraversableContainer<int> completo, nessun errore.\n";
 
   std::cout << "\nTest MappableContainer<string> su Heapvec.\n";
   myMappableTestString<lasd::HeapVec<std::string>>();
 
-
-  std::cout << "\nTest MappableContainer<string> completo, nessun errore.";
+  std::cout << "\nTest MappableContainer<string> completo, nessun errore.\n";
 
   std::cout << "\nMytest2 completo";
 }
@@ -197,8 +202,6 @@ void HeapVectIntTest()
   assert(heap2.Empty());
   heap2.Heapify();
   assert(heap2.IsHeap());
-
-  std::cout << "HeapVec su int completo\n";
 }
 
 void HeapVecDoubleTest()
@@ -325,7 +328,28 @@ void HeapVecDoubleTest()
   int sum = 0;
   sum = heap1.Fold(&FoldAdd<double>, sum);
   std::cout << "Somma elementi heap1: " << sum << std::endl;
-  std::cout << "HeapVec su double completo\n";
+
+  lasd::Vector<double> v(3);
+  v[0] = 1.1;
+  v[1] = 2.2;
+  v[2] = 3.3;
+  
+  heap5 = heap3 = (lasd::HeapVec<double>(v));
+  assert(heap5 == heap3);
+
+  heap3.Map(
+    [](double& val){
+      val *= 2;
+    }
+  );
+
+  heap5.Map(
+    [](double& val){
+      val *= 3;
+    }
+  );
+
+  assert(heap5 != heap3);
 }
 
 void HeapVecStringTest()
@@ -573,7 +597,7 @@ void PQTestInt()
   for(int i=0; i<10; i++)
     ls.InsertAtBack(i*3);
 
-  std::cout << "Traverse ls\n";
+  std::cout << "\nTraverse ls\n";
   PrintAllTraverse(ls);
   assert(ls.Size() == 10);
   assert( !ls.Empty() );
@@ -846,7 +870,7 @@ void myTraversableTestInt(const lasd::LinearContainer<T>& con)
     else
       assert( con.Exists(i) );
   }
-
+  
   int sum = con.Fold(&sumMultiple3<int>, 0);
   assert( sum == 867 );
   
@@ -865,18 +889,12 @@ void myTraversableTestInt2()
 
   vec.Map(&Increment<int>);
   assert( vec.Fold( &parity<bool>, false) == false );
-
+  
   lasd::PQHeap<int> pq1 (std::move(vec)); 
   myTraversableTestInt(pq1);
 
   lasd::HeapVec<int> hp1 (std::move(vec)); 
   myTraversableTestInt(hp1);
-}
-
-template<class T>
-void myTraversableTestInt2(const lasd::LinearContainer<T>& con)
-{
-
 }
 
 template <class T>
@@ -1012,6 +1030,189 @@ void myTestDictionaryC()
   assert(set2.Size() == 20);
 
   assert(set == set2);
+
+  assert(set.RemoveAll(vec));
+  assert(set.Empty());
+  assert( !set2.InsertAll(std::move(vec)) );
+  assert(set != set2);
+  
+
+  set.RemoveAll(vec);
+  assert(set.Empty());
+  
+  assert(set != set2);
+  set.InsertAll(vec);
+  assert(vec.Size() == 20);
+  set.Clear();
+
+  vec[2] = vec[10];
+  vec[3] = vec[7];
+
+  assert( !set.InsertAll(vec) );
+  set.RemoveAll(vec);
+  assert( set.InsertSome(vec) );
+  std::cout << set.Size() << std::endl;
+  assert(set.Size() == 18);
+
+  assert(!set.RemoveAll(vec));
+  assert(set.Empty());
+  assert( set.InsertSome(std::move(vec)) );
+  assert(set.Size() == 18);
+
+  assert(set.RemoveAll( lasd::Vector<int>(0) ));
+}
+
+void PQHeapTestDouble() {
+  lasd::Vector<double> vec(5); 
+  vec[0] = 1.1;
+  vec[1] = 100.0;
+  vec[2] = -2.3;
+  vec[3] = 5.5;
+  vec[4] = 3.14;
+
+  lasd::PQHeap<double> pq1;
+  for(unsigned i=0; i<vec.Size(); i++)
+    pq1.Insert(vec[i]);
+
+  assert(pq1.Size() == vec.Size());
+  assert(pq1.IsHeap());
+  assert(pq1.Tip() == 100.0);
+
+  lasd::PQHeap<double> pq2(pq1);
+  assert(pq2 == pq1);
+
+  lasd::PQHeap<double> pq3;
+  pq3 = std::move(pq2);
+  assert(pq3 != pq2);
+  assert(pq2.Empty());
+  assert(pq3.Size() == pq1.Size());
+
+  double x = 999.9;
+  pq3.Insert(std::move(x));
+  assert(pq3.Tip() == 999.9);
+
+  pq3.Change(1, 1234.5);
+  assert(pq3.Tip() == 1234.5);
+  pq3.Change(1, -1000.0);
+  assert(pq3.IsHeap());
+  std::cout << "\nDouble corretto pre TipR\n";
+  while (!pq3.Empty()) {
+    double t = pq3.Tip();
+    assert(t == pq3.TipNRemove() );
+    assert(pq3.IsHeap());
+    if (!pq3.Empty()) 
+      assert(pq3.Tip() <= t);
+  }
+  std::cout << "\nDouble corretto post TipR\n";
+  try { 
+    pq3.Tip(); 
+    assert(false);
+  } catch (const std::length_error& e) {}
+
+  try { 
+    pq3.RemoveTip(); 
+    assert(false); 
+  } catch (const std::length_error& e) {}
+
+  try {
+    pq3.TipNRemove(); 
+    assert(false); 
+  } catch (const std::length_error& e) {}
+  
+  try { 
+    pq1[999]; 
+    assert(false); 
+  } catch (const std::out_of_range& e) {}
+
+  std::cout << "\nDouble corretto post Try\\catch\n";
+  lasd::Vector<double> v(3);
+  v[0] = 1.1;
+  v[1] = 2.2;
+  v[2] = 3.3;
+  lasd::PQHeap<double> pq4(v);
+  assert(pq4.Size() == v.Size());
+  assert(pq4.IsHeap());
+  assert(pq4.Tip() == 3.3);
+
+  lasd::PQHeap<double> pq5(std::move(v));
+  assert(pq5.Size() == 3);
+  assert(pq5.IsHeap());
+  assert(pq5.Tip() == 3.3);
+
+  assert(pq5 == pq4);
+}
+
+void PQHeapTestString() {
+  lasd::PQHeap<std::string> pq1;
+  assert(pq1.Empty());
+  assert(pq1.Size() == 0);
+
+  lasd::Vector<std::string> vec(5); 
+  vec[0] = "apple";
+  vec[1] = "banana";
+  vec[2] = "pear";
+  vec[3] = "kiwi";
+  vec[4] = "orange";
+
+  for(unsigned i=0; i<vec.Size(); i++) {
+    pq1.Insert(vec[i]);
+    assert(pq1.IsHeap());
+  }
+  assert(pq1.Size() == vec.Size());
+  assert(!pq1.Empty());
+  assert(pq1.Tip() == "pear"); 
+
+  lasd::PQHeap<std::string> pq2(pq1);
+  assert(pq2 == pq1);
+  pq2.RemoveTip();
+  assert(pq2 != pq1);
+
+  lasd::PQHeap<std::string> pq3(std::move(pq2));
+  assert(pq3.Size() == vec.Size() - 1);
+
+  lasd::PQHeap<std::string> pq4;
+  pq4 = pq1;
+  assert(pq4 == pq1);
+
+  lasd::PQHeap<std::string> pq5;
+  pq5 = std::move(pq4);
+  assert(pq5.Size() == pq1.Size());
+
+  unsigned count = pq5.Size();
+  for (unsigned i = 0; i < count; i++) 
+    pq5.RemoveTip();
+  std::cout << "\nTutto corretto\n";
+  assert(pq5.Empty());
+
+  try { 
+    pq5.Tip(); 
+    assert(false);
+  } catch (const std::length_error&) {}
+
+  try { 
+    pq5.RemoveTip(); 
+    assert(false); 
+  } catch (const std::length_error&) {}
+  
+  try { 
+    pq5.TipNRemove(); 
+    assert(false);
+  } catch (const std::length_error&) {}
+  std::cout << "\nFine pq5\n";
+  try { 
+    pq1[100]; 
+    assert(false); 
+  } catch (const std::out_of_range&) {}
+  std::cout << "\nTutto corretto try\\catch\n";
+  pq1.Insert("melon");
+  pq1.Change(0, "zzz");
+  assert(pq1.Tip() == "zzz");
+  pq1.Change(0, std::string("alpha"));
+  assert(pq1.IsHeap());
+
+  pq1.Clear();
+  assert(pq1.Empty());
+  assert(pq1.Size() == 0);
 }
 
 template<class T>

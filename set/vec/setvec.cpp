@@ -114,15 +114,6 @@ namespace lasd {
 	template<typename Data>
 	inline bool SetVec<Data> :: Exists(const Data& dat) const noexcept
 	{
-		// bool found = false;
-		// unsigned long int i=0;
-		// while ( i < count && found == false)
-		// {	
-		// 	if( (*this)[i] == dat )
-		// 		found = true;
-		// 	i++;
-		// }
-		// return found;
 		unsigned long pos = binSearch(dat);
 		return  pos!=count && (*this)[pos]== dat;
 	}
@@ -297,7 +288,9 @@ namespace lasd {
 	inline bool SetVec<Data> :: Remove(const Data& dat)
 	{
 		unsigned long int i = binSearch(dat);
-		if((*this)[i] != dat)
+		if(Empty())
+			return false;
+		if(i<count && (*this)[i] != dat)
 			return false;
 		for(;i < count-1; i++)
 			at(i) = (*this)[i+1];

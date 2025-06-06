@@ -12,7 +12,7 @@ namespace lasd {
       (
          [this, &all](const Data& dat)
          {
-            all = all && Insert(dat);
+            all = Insert(dat) && all ;
          }
       );
       return all;
@@ -26,7 +26,7 @@ namespace lasd {
       (
          [this, &all](const Data& dat)
          {
-            all = all && Insert(std::move(dat));
+            all = Insert(std::move(dat)) && all ;
          }
       );
       return all;
@@ -40,7 +40,7 @@ namespace lasd {
       (
          [this, &all](const Data& dat)
          {
-            all = all && Remove(dat);
+            all = Remove(dat) && all  ;
          }
       );
       return all;
@@ -54,7 +54,7 @@ namespace lasd {
       (
          [this, &inserted](const Data& dat)
          {
-            inserted = inserted && Insert(dat);
+            inserted = Insert(dat) || inserted ;
          }
       );
       return inserted; 
@@ -68,7 +68,7 @@ namespace lasd {
       (
          [this, &inserted](const Data& dat)
          {
-            inserted = inserted && Insert( std::move(dat) );
+            inserted = Insert( std::move(dat)) || inserted;
          }
       );
       return inserted;
@@ -82,7 +82,7 @@ namespace lasd {
       (
          [this, &inserted](const Data& dat)
          {
-            inserted = inserted && Remove(dat);
+            inserted = Remove(dat) || inserted;
          }
       );
       return inserted;

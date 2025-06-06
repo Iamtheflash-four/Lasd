@@ -70,6 +70,7 @@ public:
   using HeapVec<Data>::IsHeap;
   using LinearContainer<Data>::operator==;
   using LinearContainer<Data>::operator!=;
+  using Vector<Data>::Exists;
 
   const Data& Tip() const override; // Override PQ member (must throw std::length_error when empty)
   void RemoveTip() override; // Override PQ member (must throw std::length_error when empty)
@@ -85,9 +86,6 @@ public:
 
 protected:
   void HeapifyUp(unsigned long int) noexcept;
-  //void HeapifyDown(unsigned long int) noexcept;
-  //Data& operator[](unsigned long int) override;
-  // Auxiliary functions, if necessary!
   void Resize(unsigned long int);
 };
 
